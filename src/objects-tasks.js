@@ -33,15 +33,12 @@ function shallowCopy(obj) {
  *    mergeObjects([]) => {}
  */
 function mergeObjects(objects) {
-  const result = {};
-
-  objects.forEach((obj) => {
-    Object.keys(obj).forEach((key) => {
-      result[key] = (result[key] || 0) + obj[key];
+  return objects.reduce((acc, obj) => {
+    Object.entries(obj).forEach(([key, value]) => {
+      acc[key] = (acc[key] || 0) + value;
     });
-  });
-
-  return result;
+    return acc;
+  }, {});
 }
 
 /**
@@ -206,7 +203,7 @@ function Rectangle(width, height) {
   this.width = width;
   this.height = height;
 
-  this.getArea = function () {
+  this.getArea = function getArea() {
     return this.width * this.height;
   };
 }
@@ -434,7 +431,9 @@ const cssSelectorBuilder = {
   },
 
   combine(selector1, combinator, selector2) {
-    this.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    const newSelector = Object.create(cssSelectorBuilder);
+    newSelector.selector = `${selector1.stringify()} ${combinator} ${selector2.stringify()}`;
+    return newSelector;
   },
   stringify() {
     return this.selector;
